@@ -18,4 +18,4 @@ java -cp target/jdbc-avail-wait-0.1-jar-with-dependencies.jar:jdbc/ojdbc6-11.2.0
 ```
 
 # How do I know whether the wait failed?
-There's a couple of error-levels being returned by the java process. 0=OK, 1=Timeout etc. For more info [see contstants in JdbcAvailWait class](src/main/java/net/brdloush/jdbcavailwait/JdbcAvailWait)
+There's a couple of error-levels being returned by the java process. 0=OK, 1=Timeout etc. For more info [see contstants in JdbcAvailWait class](src/main/java/net/brdloush/jdbcavailwait/JdbcAvailWait.java)
