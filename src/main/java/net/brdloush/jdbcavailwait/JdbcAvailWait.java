@@ -115,8 +115,9 @@ public class JdbcAvailWait
         long nextMsgMillis = millisBefore + msgIncrementMillis;
 
         log.info("Starting waiting loop (max "+timeoutSec+" seconds) for accessibility of jdbc url "+jdbcUrl);
-        while (waitUntil > millisBefore) {
-            long currentMillis = System.currentTimeMillis();
+        long currentMillis = System.currentTimeMillis();
+        while (currentMillis < waitUntil) {
+            currentMillis = System.currentTimeMillis();
 
             if (outputTimePassedMsg && (currentMillis > nextMsgMillis )) {
                 nextMsgMillis+=msgIncrementMillis;
