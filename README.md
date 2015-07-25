@@ -12,8 +12,8 @@ will first wait until DB is actually accessible and only then will it continue w
 # How to use?
 One example is worth thousand words:
 ```
-java -cp target/jdbc-avail-wait-0.1-jar-with-dependencies.jar:jdbc/ojdbc6-11.2.0.1.0.jar net.brdloush.jdbcavailwait.JdbcAvailWait -d oracle.jdbc.OracleDriver -url jdbc:oracle:thin:@czprguxdv48:18096:ORCL -u SY_O2SKO4_PROD -p o4 -msg
-2015-07-25 22:40:38 INFO  JdbcAvailWait:117 - Starting waiting loop (max 60 seconds) for accessibility of jdbc url jdbc:oracle:thin:@czprguxdv48:18096:ORCL
+java -cp target/jdbc-avail-wait-0.1-jar-with-dependencies.jar:jdbc/ojdbc6-11.2.0.1.0.jar net.brdloush.jdbcavailwait.JdbcAvailWait -d oracle.jdbc.OracleDriver -url jdbc:oracle:thin:@localhost:1521:XE -u DBUSER -p DBPASSWORD -msg
+2015-07-25 22:40:38 INFO  JdbcAvailWait:117 - Starting waiting loop (max 60 seconds) for accessibility of jdbc url jdbc:oracle:thin:@localhost:1521:XE
 2015-07-25 22:40:39 INFO  JdbcAvailWait:130 - the wait is over, the jdbc url is accessible!
 ```
 
