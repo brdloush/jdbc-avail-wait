@@ -195,7 +195,7 @@ public class JdbcAvailWait
      * @param option
      */
     private void exitMissingValue(Option option) {
-        log.error("Missing required value for "+option.getArgName());
+        log.error("Missing required value for \"--"+option.getLongOpt()+"\" option");
         System.exit(ERROR_CODE_ILLEGAL_PARAMS);
     }
 
