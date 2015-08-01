@@ -214,6 +214,6 @@ public class JdbcAvailWait
      */
     private void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp( "java -cp target/jdbc-avail-wait-0.1-jar-with-dependencies.jar;jdbc/ojdbc6-11.2.0.1.0.jar net.brdloush.jdbcavailwait.JdbcAvailWait -d oracle.jdbc.OracleDriver -url jdbc:oracle:thin:@localhost:1521:XE -u MYUSERNAME -p MYPASSWORD -msg", options );
+        formatter.printHelp( "java -cp jdbc-avail-wait-0.1-jar-with-dependencies.jar:ojdbc6-11.2.0.1.0.jar net.brdloush.jdbcavailwait.JdbcAvailWait -d oracle.jdbc.OracleDriver -url jdbc:oracle:thin:@localhost:1521:XE -u MYUSERNAME -p MYPASSWORD -msg", options );
     }
 }

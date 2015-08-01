@@ -19,6 +19,7 @@ public class CliParserOptionsProviderImpl implements CliParserOptionsProvider {
         options.addOption(CliOptions.OUTPUT_TIME_PASSED_MSG);
         options.addOption(CliOptions.JDBC_DRIVER);
         options.addOption(CliOptions.VERBOSE);
+        options.addOption(CliOptions.JDBC_HELP);
         return options;
     }
 }
