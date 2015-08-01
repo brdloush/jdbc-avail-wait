@@ -64,16 +64,12 @@ public class JdbcAvailWait
             String timeoutStr = line.getOptionValue(CliOptions.JDBC_TIMEOUT.getLongOpt());
             String driverClassName = line.getOptionValue(CliOptions.JDBC_DRIVER.getLongOpt());
             boolean outputTimePassedMsg = line.hasOption(CliOptions.OUTPUT_TIME_PASSED_MSG.getLongOpt());
+            boolean verbose = line.hasOption(CliOptions.VERBOSE.getLongOpt());
 
             if (StringUtils.isBlank(jdbcUrl)) {
                 exitMissingValue(CliOptions.JDBC_URL);
             }
-            if (StringUtils.isBlank(user)) {
-                exitMissingValue(CliOptions.JDBC_USER);
-            }
-            if (StringUtils.isBlank(password)) {
-                exitMissingValue(CliOptions.JDBC_PASSWORD);
-            }
+
             int timeoutSec = CliConstants.DEFAULT_TIMEOUT;
             if (StringUtils.isNotBlank(timeoutStr)) {
                 timeoutSec = Integer.valueOf(timeoutStr);
@@ -90,7 +86,7 @@ public class JdbcAvailWait
                 }
             }
 
-            executeWaitingLoop(jdbcUrl, user, password, timeoutSec, outputTimePassedMsg);
+            executeWaitingLoop(jdbcUrl, user, password, timeoutSec, outputTimePassedMsg, verbose);
 
         } catch (ParseException e) {
             log.error( "Parsing failed.  Reason: " + e.getMessage() );
@@ -106,8 +102,9 @@ public class JdbcAvailWait
      * @param password password for database user
      * @param timeoutSec maximum number of seconds the loop shall wait until specified jdbcUrl becomes available
      * @param outputTimePassedMsg when set to true, a "still waiting [5/60 sec]..." message will get written to stdout
+     * @param verbose if set to true, (among others) connection exceptions will get outputted to stderr
      */
-    private void executeWaitingLoop(String jdbcUrl, String user, String password, int timeoutSec, boolean outputTimePassedMsg) {
+    private void executeWaitingLoop(String jdbcUrl, String user, String password, int timeoutSec, boolean outputTimePassedMsg, boolean verbose) {
 
         final long millisBefore = System.currentTimeMillis();
         final long waitUntil = millisBefore + (timeoutSec*1000);
@@ -125,7 +122,7 @@ public class JdbcAvailWait
                 log.info("["+elapsedSeconds+"/"+timeoutSec+" sec] still waiting ...");
             }
 
-            boolean jdbcUrlIsAccessible = isJdbcUrlAccessible(jdbcUrl, user, password);
+            boolean jdbcUrlIsAccessible = isJdbcUrlAccessible(jdbcUrl, user, password, verbose);
 
             if (jdbcUrlIsAccessible) {
                 log.info("the wait is over, the jdbc url is accessible!");
@@ -152,13 +149,19 @@ public class JdbcAvailWait
      * @param jdbcUrl jdbc url
      * @param user database user
      * @param password password for database user
+     * @param verbose if set to true, (among others) connection exceptions will get outputted to stderr
      * @return true if the connection was succesfully estabilished, false otherwise
      */
-    private boolean isJdbcUrlAccessible(String jdbcUrl, String user, String password) {
+    private boolean isJdbcUrlAccessible(String jdbcUrl, String user, String password, boolean verbose) {
 
         Properties connectionProps = new Properties();
-        connectionProps.put("user", user);
-        connectionProps.put("password", password);
+
+        if (StringUtils.isNotBlank(user)) {
+            connectionProps.put("user", user);
+        }
+        if (StringUtils.isNotBlank(password)) {
+            connectionProps.put("password", password);
+        }
 
         Connection conn = null;
         try {
@@ -168,13 +171,18 @@ public class JdbcAvailWait
                 return true;
             }
         } catch (SQLException e) {
-            // exception is actually expected here, so we don't  bother logging.
-            //
-            // We'll only "No suitable driver found"
+            // exception is actually expected here, so we don't  bother logging unless we're in "verbose" mode.
+
+            // the only exception is "No suitable driver found" -> in such case we'll exit as waiting makes no sense
             String errorMessage = e.getMessage();
             if (StringUtils.isNotBlank(errorMessage) && errorMessage.contains("No suitable driver found")) {
                 log.error("Got 'No suitable driver found' error, it's useless to continue waiting. Perhaps you misspelled your jdbcUrl or forgot to supply -jar with your jdbc driver");
                 System.exit(ERROR_CODE_NO_JDBC_DRIVER);
+            }
+
+            // log exception if in verbose
+            if (verbose) {
+                log.error("SQLException occurred when trying to reach JDBC URI",e);
             }
 
         } finally {
